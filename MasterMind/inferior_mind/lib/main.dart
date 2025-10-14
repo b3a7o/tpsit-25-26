@@ -14,15 +14,38 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  List<Color> colors = [Colors.grey, Colors.deepPurple, Colors.green, Colors.yellow, Colors.deepOrange];
-  List<int> currentIndexes = [0,0,0,0];
+  List<Color> colors = [
+    Colors.grey, 
+    Colors.deepPurple,
+    Colors.green,
+    Colors.yellow,
+    Colors.deepOrange
+  ];
+
   List<int> codeToGuess = List.filled(4, 0);
+  List<int> currentIndexes = List.filled(4, 0);
   bool playing = true;
+
+  final colorButtonIcon = Icon(Icons.refresh_rounded);
+
+  final colorButtonsTheme = ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadiusGeometry.circular(10.0),
+      ),
+      iconColor: Colors.black,
+      iconSize: 1.0
+    )
+  );
 
   @override
   void initState() {
     super.initState();
     generateCodeToGuess();
+  }
+
+  void resetIndexes(){
+    currentIndexes = List.filled(currentIndexes.length, 0);
   }
 
   void generateCodeToGuess(){
@@ -67,76 +90,51 @@ class _MyAppState extends State<MyApp> {
               children: [
                 ElevatedButton(
                   onPressed: () => updateIdex(0), 
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors[currentIndexes[0]],
-                      textStyle: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    style: colorButtonsTheme.style?.copyWith(
+                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[0]])
                     ),
-                  child: Text("${currentIndexes[0]}", style: TextStyle(
-                    color: Colors.black,
-                    ),
-                  ), 
+                    child: colorButtonIcon 
                 ),
 
                 ElevatedButton(
                   onPressed: () => updateIdex(1),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors[currentIndexes[1]],
-                    textStyle: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black
+                  style: colorButtonsTheme.style?.copyWith(
+                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[1]])
                     ),
-                  ),
-                  child: Text("${currentIndexes[1]}", style: TextStyle(
-                    color: Colors.black,
-                    ),
-                  ),
+                  child: colorButtonIcon
                 ),
 
                 ElevatedButton(
                   onPressed: () => updateIdex(2), 
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors[currentIndexes[2]],
-                      textStyle: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black
-                      ),
-                  ),
-                  child: Text("${currentIndexes[2]}", style: TextStyle(
-                    color: Colors.black,
+                  style: colorButtonsTheme.style?.copyWith(
+                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[2]])
                     ),
-                  ),
+                  child: colorButtonIcon,
                 ),
 
                 ElevatedButton(
                   onPressed: () => updateIdex(3), 
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors[currentIndexes[3]],
-                    textStyle: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black
+                  style: colorButtonsTheme.style?.copyWith(
+                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[3]])
                     ),
-                  ),
-                  child: Text("${currentIndexes[3]}", style: TextStyle(
-                    color: Colors.black,
-                    ),
-                  ),
+                  child: colorButtonIcon,
                 ),
               ],
             ),
             ElevatedButton(onPressed: (){
-              if(codeFounded()){
-                setState(() {
+              setState(() {
+                if(codeFounded()){
                   playing = false;
-                });
-              }
+                }
+                resetIndexes();
+              });
+              
             }, 
-            child: Text("GUESS"),
+            child: Text("GUESS", style: TextStyle(
+              color: Colors.black, 
+              fontWeight: FontWeight.bold, 
+              fontSize: 20
+              )),
             ),
 
             Text('${codeToGuess[0]}, ${codeToGuess[1]}, ${codeToGuess[2]}, ${codeToGuess[3]}')
@@ -145,7 +143,13 @@ class _MyAppState extends State<MyApp> {
 
         : Column(
           children: [
-            Text('CODE FOUNDED!, click continue to play again', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              'CODE FOUNDED!, click continue to play again', 
+              style: TextStyle(
+                fontSize: 20, 
+                fontWeight: FontWeight.bold
+              ),
+            ),
             ElevatedButton(
               onPressed: (){
                 restartGame();

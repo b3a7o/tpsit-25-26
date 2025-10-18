@@ -80,90 +80,89 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text("INFERIOR GAME")
+          title: const Text("INFERIOR GAME"),
         ),
-        body: playing 
-        ? Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () => updateIdex(0), 
-                    style: colorButtonsTheme.style?.copyWith(
-                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[0]])
+        body: playing
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        for (int i = 0; i < 4; i++)
+                          ElevatedButton(
+                            onPressed: () => updateIdex(i),
+                            style: colorButtonsTheme.style?.copyWith(
+                              backgroundColor: WidgetStatePropertyAll(
+                                colors[currentIndexes[i]],
+                              ),
+                            ),
+                            child: colorButtonIcon,
+                          ),
+                      ],
                     ),
-                    child: colorButtonIcon 
-                ),
-
-                ElevatedButton(
-                  onPressed: () => updateIdex(1),
-                  style: colorButtonsTheme.style?.copyWith(
-                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[1]])
+                    const SizedBox(height: 20),
+                    Text(
+                      '${codeToGuess[0]}, ${codeToGuess[1]}, ${codeToGuess[2]}, ${codeToGuess[3]}',
                     ),
-                  child: colorButtonIcon
+                  ],
                 ),
-
-                ElevatedButton(
-                  onPressed: () => updateIdex(2), 
-                  style: colorButtonsTheme.style?.copyWith(
-                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[2]])
+              )
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'CODE FOUNDED!\nClick continue to play again',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  child: colorButtonIcon,
-                ),
-
-                ElevatedButton(
-                  onPressed: () => updateIdex(3), 
-                  style: colorButtonsTheme.style?.copyWith(
-                      backgroundColor: WidgetStatePropertyAll(colors[currentIndexes[3]])
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        restartGame();
+                        setState(() {
+                          playing = true;
+                        });
+                      },
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
                     ),
-                  child: colorButtonIcon,
+                  ],
                 ),
-              ],
-            ),
-            ElevatedButton(onPressed: (){
-              setState(() {
-                if(codeFounded()){
-                  playing = false;
-                }
-                resetIndexes();
-              });
-              
-            }, 
-            child: Text("GUESS", style: TextStyle(
-              color: Colors.black, 
-              fontWeight: FontWeight.bold, 
-              fontSize: 20
-              )),
-            ),
-
-            Text('${codeToGuess[0]}, ${codeToGuess[1]}, ${codeToGuess[2]}, ${codeToGuess[3]}')
-          ],
-        )
-
-        : Column(
-          children: [
-            Text(
-              'CODE FOUNDED!, click continue to play again', 
-              style: TextStyle(
-                fontSize: 20, 
-                fontWeight: FontWeight.bold
               ),
-            ),
-            ElevatedButton(
-              onPressed: (){
-                restartGame();
-                setState(() {
-                  playing = true;
-                });
-              }, 
-              child: Text('Continue', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),)
-            )
-          ],
-        )
-
-
+        floatingActionButton: playing
+            ? FloatingActionButton(
+                backgroundColor: Colors.yellow,
+                onPressed: () {
+                  setState(() {
+                    if (codeFounded()) {
+                      playing = false;
+                    }
+                    resetIndexes();
+                  });
+                },
+                child: const Text(
+                  "GUESS",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }
+
 }

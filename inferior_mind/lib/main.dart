@@ -40,6 +40,7 @@ class _MyAppState extends State<MyApp> {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), 
+          foregroundColor: Colors.black,
         )
       ),
 
@@ -115,6 +116,19 @@ class _MyAppState extends State<MyApp> {
           ),
           centerTitle: true,
           title: const Text("INFERIOR GAME"),
+          actions: [
+            IconButton(
+              onPressed: (){
+                setState(() {
+                  colorBlindModeActive = !colorBlindModeActive;
+                });
+              }, 
+              icon: Icon(
+                colorBlindModeActive ? Icons.color_lens : Icons.remove_red_eye,
+              ),
+              tooltip: 'ColorBlind mode, add numbers inside the buttons',
+            )
+          ],
         ),
         body: playing
             ? Center(
@@ -131,6 +145,8 @@ class _MyAppState extends State<MyApp> {
                               child: ElevatedButton(
                                 onPressed: () => updateIdex(i),
                                 style: ButtonStyle(
+                                  minimumSize: WidgetStateProperty.all(const Size(10, 100)),
+                                  maximumSize: WidgetStateProperty.all(const Size(10, 100)),
                                   backgroundColor: WidgetStateProperty.resolveWith(
                                     (states) => colors[currentIndexes[i]],
                                   ),
@@ -139,7 +155,16 @@ class _MyAppState extends State<MyApp> {
                                   textStyle: Theme.of(context).elevatedButtonTheme.style?.textStyle,
                                   foregroundColor: Theme.of(context).elevatedButtonTheme.style?.foregroundColor,
                                 ),
-                                child: null//Icon(Icons.refresh_rounded, color: Colors.black, size: 20),
+                                child: colorBlindModeActive 
+                                  ? Text(
+                                    '${currentIndexes[i]}',
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 40,
+                                    )
+                                  )
+                                  : null,
                               ),
                             ),
                           ),                         
@@ -172,14 +197,17 @@ class _MyAppState extends State<MyApp> {
                           playing = true;
                         });
                       },
-                      style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                      style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(Colors.deepPurple),
+                        minimumSize: WidgetStateProperty.all(const Size(200, 75)),
+                        maximumSize: WidgetStateProperty.all(const Size(200, 75)),
                       ),
                       child: const Text(
                         'Continue',
                         style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
+                          fontSize: 35,
+                          fontWeight: FontWeight.bold,
+                          
                         ),
                       ),
                     ),
@@ -188,7 +216,7 @@ class _MyAppState extends State<MyApp> {
               ),
         floatingActionButton: playing
             ? FloatingActionButton(
-                backgroundColor: Colors.yellow,
+                backgroundColor: Colors.deepPurple,
                 onPressed: () {
                   setState(() {
                     if (codeFounded()) {

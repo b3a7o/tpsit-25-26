@@ -14,6 +14,42 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool playing = true;
+  bool DarkModeActive = false;
+  bool colorBlindModeActive = false;
+
+  ThemeData getTheme(bool isDarkMode){
+    final base = isDarkMode ? ThemeData.dark() : ThemeData.light();
+    
+    return base.copyWith(
+      colorScheme: base.colorScheme.copyWith(
+        primary: Colors.deepPurple,
+        secondary: Colors.deepOrangeAccent,
+      ),
+      scaffoldBackgroundColor: isDarkMode ? Colors.black : Colors.white,
+      appBarTheme: AppBarTheme(
+        backgroundColor: isDarkMode ? Colors.deepPurple[700] : Colors.deepPurple,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        centerTitle: true,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), 
+        )
+      ),
+
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.yellow,
+        foregroundColor: Colors.black,
+      )
+    );
+  }
+
   List<Color> colors = [
     Colors.grey, 
     Colors.deepPurple,
@@ -24,19 +60,6 @@ class _MyAppState extends State<MyApp> {
 
   List<int> codeToGuess = List.filled(4, 0);
   List<int> currentIndexes = List.filled(4, 0);
-  bool playing = true;
-
-  final colorButtonIcon = Icon(Icons.refresh_rounded);
-
-  final colorButtonsTheme = ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusGeometry.circular(10.0),
-      ),
-      iconColor: Colors.black,
-      iconSize: 1.0
-    )
-  );
 
   @override
   void initState() {
@@ -77,8 +100,19 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: getTheme(false),
+      darkTheme: getTheme(true),
+      themeMode: DarkModeActive ? ThemeMode.dark : ThemeMode.light,
       home: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            onPressed: (){
+              setState(() {
+                DarkModeActive = !DarkModeActive;
+              });
+            }, 
+            icon: Icon(DarkModeActive ? Icons.wb_sunny : Icons.nightlight_round)
+          ),
           centerTitle: true,
           title: const Text("INFERIOR GAME"),
         ),
@@ -91,15 +125,24 @@ class _MyAppState extends State<MyApp> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         for (int i = 0; i < 4; i++)
-                          ElevatedButton(
-                            onPressed: () => updateIdex(i),
-                            style: colorButtonsTheme.style?.copyWith(
-                              backgroundColor: WidgetStatePropertyAll(
-                                colors[currentIndexes[i]],
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: ElevatedButton(
+                                onPressed: () => updateIdex(i),
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.resolveWith(
+                                    (states) => colors[currentIndexes[i]],
+                                  ),
+                                  shape: Theme.of(context).elevatedButtonTheme.style?.shape,
+                                  padding: Theme.of(context).elevatedButtonTheme.style?.padding,
+                                  textStyle: Theme.of(context).elevatedButtonTheme.style?.textStyle,
+                                  foregroundColor: Theme.of(context).elevatedButtonTheme.style?.foregroundColor,
+                                ),
+                                child: null//Icon(Icons.refresh_rounded, color: Colors.black, size: 20),
                               ),
                             ),
-                            child: colorButtonIcon,
-                          ),
+                          ),                         
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -129,6 +172,9 @@ class _MyAppState extends State<MyApp> {
                           playing = true;
                         });
                       },
+                      style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                        backgroundColor: WidgetStateProperty.all(Colors.deepPurple),
+                      ),
                       child: const Text(
                         'Continue',
                         style: TextStyle(

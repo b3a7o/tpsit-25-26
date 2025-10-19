@@ -17,6 +17,7 @@ class _MyAppState extends State<MyApp> {
   bool playing = true;
   bool DarkModeActive = false;
   bool colorBlindModeActive = false;
+  int difficulty = 1;
 
   ThemeData getTheme(bool isDarkMode){
     final base = isDarkMode ? ThemeData.dark() : ThemeData.light();
@@ -52,12 +53,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   List<Color> colors = [
-    Colors.grey, 
+    Colors.grey,
     Colors.deepPurple,
     Colors.green,
     Colors.yellow,
-    Colors.deepOrange
+    Colors.deepOrange,
+    Colors.blue
   ];
+
+  List<Color> get activeColors => colors.sublist(1, difficulty + 2);
 
   List<int> codeToGuess = List.filled(4, 0);
   List<int> currentIndexes = List.filled(4, 0);
@@ -74,13 +78,13 @@ class _MyAppState extends State<MyApp> {
 
   void generateCodeToGuess(){
     for(int i=0; i<codeToGuess.length; i++){
-      codeToGuess[i] = Random().nextInt(codeToGuess.length) + 1;
+      codeToGuess[i] = Random().nextInt(activeColors.length) + 1; 
     }
   }
 
   void updateIdex(int i){
     setState(() {
-      currentIndexes[i] = (currentIndexes[i] + 1) % colors.length;
+      currentIndexes[i] = (currentIndexes[i] + 1) % (activeColors.length + 1);
     });
   }
 
@@ -96,6 +100,14 @@ class _MyAppState extends State<MyApp> {
   void restartGame(){
     currentIndexes = [0,0,0,0];
     generateCodeToGuess();
+  }
+
+  void updateDifficulty(int level){
+    setState(() {
+      difficulty = level;
+      generateCodeToGuess();
+      resetIndexes();
+    });
   }
 
   @override
@@ -135,6 +147,32 @@ class _MyAppState extends State<MyApp> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(4, (index){
+                        return GestureDetector(
+                          onTap: () => updateDifficulty(index + 1),
+                          child: Container(
+                            margin: const EdgeInsets.all(6),
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: index < difficulty
+                                ? Colors.deepPurple
+                                : Colors.grey,
+                              border: Border.all(
+                                color: Colors.black, 
+                                width: 1
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -147,9 +185,10 @@ class _MyAppState extends State<MyApp> {
                                 style: ButtonStyle(
                                   minimumSize: WidgetStateProperty.all(const Size(10, 100)),
                                   maximumSize: WidgetStateProperty.all(const Size(10, 100)),
-                                  backgroundColor: WidgetStateProperty.resolveWith(
-                                    (states) => colors[currentIndexes[i]],
-                                  ),
+                                  backgroundColor: WidgetStateProperty.resolveWith((states){
+                                    if (currentIndexes[i] == 0) return Colors.grey;
+                                    return activeColors[currentIndexes[i] - 1];
+                                  }),
                                   shape: Theme.of(context).elevatedButtonTheme.style?.shape,
                                   padding: Theme.of(context).elevatedButtonTheme.style?.padding,
                                   textStyle: Theme.of(context).elevatedButtonTheme.style?.textStyle,
@@ -172,7 +211,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      '${codeToGuess[0]}, ${codeToGuess[1]}, ${codeToGuess[2]}, ${codeToGuess[3]}',
+                      codeToGuess.join(', ')
                     ),
                   ],
                 ),

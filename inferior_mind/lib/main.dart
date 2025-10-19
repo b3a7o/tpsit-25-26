@@ -180,6 +180,7 @@ class _MyAppState extends State<MyApp> {
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              //.symmetric destra e sinistra, .all tutti i lati
                               child: ElevatedButton(
                                 onPressed: () => updateIdex(i),
                                 style: ButtonStyle(
@@ -189,6 +190,8 @@ class _MyAppState extends State<MyApp> {
                                     if (currentIndexes[i] == 0) return Colors.grey;
                                     return activeColors[currentIndexes[i] - 1];
                                   }),
+                                  //il colore non dipende dallo satato del widget ma dalla lista di index
+                                  //per questo non uso state in .resolveWith
                                   shape: Theme.of(context).elevatedButtonTheme.style?.shape,
                                   padding: Theme.of(context).elevatedButtonTheme.style?.padding,
                                   textStyle: Theme.of(context).elevatedButtonTheme.style?.textStyle,
